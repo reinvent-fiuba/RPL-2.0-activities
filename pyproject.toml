@@ -21,7 +21,6 @@ sqlmodel = "^0.0.8"
 start = "src.main:start"
 
 [tool.poetry.group.dev.dependencies]
-pylint = "^2.17.1"
 pre-commit = "^3.2.1"
 black = "^23.1.0"
 isort = "^5.12.0"
