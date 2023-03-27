@@ -28,3 +28,9 @@ DB_NAME='rpl'
 ```
 
 All these values can be overrided using environment variables.
+
+## Hitting the service locally
+
+```
+curl http://127.0.0.1:8000/api/v2/courses/1/activities
+```
