@@ -17,3 +17,9 @@ router = APIRouter(
 async def get_activities(course_id: int, db: get_db = Depends()):
     result = ActivitiesService(db).get_by_course_id(course_id)
     return result
+
+
+@router.get("/courses/{course_id}/activities/{activity_id}", response_model=Activity)
+async def get_activity(course_id: int, activity_id: int, db: get_db = Depends()):
+    result = ActivitiesService(db).get_by_id(course_id, activity_id)
+    return result
