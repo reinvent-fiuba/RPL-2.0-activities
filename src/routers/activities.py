@@ -3,12 +3,15 @@ from typing import List
 from fastapi import APIRouter, Depends
 
 from src.config.database import get_db
+from src.dependencies.authentication import authentication
+from src.dependencies.authorization import authorization
 from src.schemas.activities import Activity
 from src.services.activities import ActivitiesService
 
 router = APIRouter(
     prefix="/api/v2",
     tags=[],
+    dependencies=[Depends(authentication), Depends(authorization)],
     responses={404: {"description": "Not found"}},
 )
 
