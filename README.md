@@ -34,3 +34,24 @@ All these values can be overrided using environment variables.
 ```
 curl http://127.0.0.1:8000/api/v2/courses/1/activities
 ```
+
+## Running tests
+
+```
+poetry run pytest
+```
+
+For running only unit tests:
+
+```
+poetry run pytest tests/unit
+```
+
+For running only http tests:
+
+```
+poetry run pytest tests/http
+```
+
+Note: By default logs aren't visible while running tests, for showing logs you will need to add the `-s` flag.
+ 

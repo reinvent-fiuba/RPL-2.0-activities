@@ -55,7 +55,10 @@ def activity_fixture(session: Session):
 
 
 def test_get_activities(client: TestClient, activity: Activity):
-    response = client.get(f"/api/v2/courses/{activity.course_id}/activities")
+    response = client.get(
+        f"/api/v2/courses/{activity.course_id}/activities",
+        headers={"Authorization": "bearer token"},
+    )
     assert response.status_code == 200
     response_activity = response.json()[0]
     assert response_activity["id"] == activity.id
@@ -65,14 +68,17 @@ def test_get_activities(client: TestClient, activity: Activity):
 
 
 def test_get_activities_empty(client: TestClient):
-    response = client.get("/api/v2/courses/1/activities")
+    response = client.get(
+        "/api/v2/courses/1/activities", headers={"Authorization": "bearer token"}
+    )
     assert response.status_code == 200
     assert response.json() == []
 
 
 def test_get_activity(client: TestClient, activity: Activity):
     response = client.get(
-        f"/api/v2/courses/{activity.course_id}/activities/{activity.id}"
+        f"/api/v2/courses/{activity.course_id}/activities/{activity.id}",
+        headers={"Authorization": "bearer token"},
     )
     assert response.status_code == 200
     response_activity = response.json()
@@ -83,7 +89,9 @@ def test_get_activity(client: TestClient, activity: Activity):
 
 
 def test_get_activity_not_found(client: TestClient):
-    response = client.get("/api/v2/courses/1/activities/1")
+    response = client.get(
+        "/api/v2/courses/1/activities/1", headers={"Authorization": "bearer token"}
+    )
     assert response.status_code == 404
     response_error = response.json()
     assert (
