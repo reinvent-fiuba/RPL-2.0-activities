@@ -98,3 +98,44 @@ def test_get_activity_not_found(client: TestClient):
         response_error["detail"]
         == "The Activity with ID 1 does not exist in the Course 1"
     )
+
+
+def test_delete_activity(client: TestClient, activity: Activity, session: Session):
+    response = client.delete(
+        f"/api/v2/courses/{activity.course_id}/activities/{activity.id}",
+        headers={"Authorization": "bearer token"},
+    )
+
+    assert response.status_code == 204
+
+    assert session.query(Activity).where(Activity.id == activity.id).first() == None
+
+
+def test_delete_activity_not_found(client: TestClient):
+    response = client.delete(
+        "/api/v2/courses/1/activities/1",
+        headers={"Authorization": "bearer token"},
+    )
+
+    assert response.status_code == 404
+
+
+def test_create_activity(client: TestClient, session: Session):
+    print(session.query(Activity).all())
+    files = [('startingFile', open('./tests/http/resources/files_metadata', 'rb')), ('startingFile', open('./tests/http/resources/main.py', 'rb'))]
+    response = client.post(
+        "/api/v2/courses/1/activities",
+        data={
+            "name": "Some test activity",
+            "points": 1,
+            "language": "python",
+            "activityCategoryId": 1,
+            "description": "Some description"
+        },
+        files=files,
+        headers={"Authorization": "bearer token"}
+    )
+
+    print(response.json())
+
+    print(session.query(Activity).all())
