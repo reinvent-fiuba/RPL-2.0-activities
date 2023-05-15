@@ -8,7 +8,6 @@ from src.dependencies.authorization import authorization
 from src.schemas.categories import Category
 from src.services.categories import CategoriesService
 
-
 router = APIRouter(
     prefix="/api/v2",
     tags=[],
