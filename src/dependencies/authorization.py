@@ -17,6 +17,11 @@ async def authorization(
             "GET",
             "/api/v2/courses/{course_id}/activities/{activity_id}",
         ): "activity_view",
+        ("GET", "/api/v2/courses/{course_id}/categories"): "activity_view",
+        (
+            "GET",
+            "/api/v2/courses/{course_id}/categories/{category_id}",
+        ): "activity_view",
     }
 
     route: APIRoute = request.scope["route"]
