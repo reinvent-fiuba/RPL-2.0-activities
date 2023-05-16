@@ -50,7 +50,7 @@ class ActivityCreate():
         self.active = active
         self.starting_file = TarUtils().compressToTarGz(startingFile) # Compress files and store bytes
 
-    def toActivity(self, course_id, starting_file_id):
+    def toActivity(self, course_id, starting_files_id):
         # This is not a good practice, doing it here just to avoid circular dependency
         from src.models.activities import Activity as ActivityModel
 
@@ -66,7 +66,7 @@ class ActivityCreate():
             active = self.active,
             
             course_id=course_id,
-            starting_file_id=starting_file_id,
+            starting_files_id=starting_files_id,
 
             is_io_tested=True,
             deleted=False,

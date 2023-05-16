@@ -9,8 +9,8 @@ class TarUtils():
         fh = io.BytesIO()
         with tarfile.open(fileobj=fh, mode='w:gz') as tar:
             for file in files:
-                info = tarfile.TarFile(file.filename)
-                info.size = file.file.size
+                info = tarfile.TarInfo(file.filename)
+                info.size = file.size
                 tar.addfile(info, file.file)
 
         return fh.getvalue()

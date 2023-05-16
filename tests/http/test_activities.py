@@ -8,6 +8,7 @@ from sqlmodel.pool import StaticPool
 from src.config.database import get_db
 from src.main import app
 from src.models.activities import Activity
+from src.models.rpl_files import RPLFile
 
 
 @pytest.fixture(name="session")
@@ -121,7 +122,6 @@ def test_delete_activity_not_found(client: TestClient):
 
 
 def test_create_activity(client: TestClient, session: Session):
-    print(session.query(Activity).all())
     files = [('startingFile', open('./tests/http/resources/files_metadata', 'rb')), ('startingFile', open('./tests/http/resources/main.py', 'rb'))]
     response = client.post(
         "/api/v2/courses/1/activities",
@@ -135,7 +135,11 @@ def test_create_activity(client: TestClient, session: Session):
         files=files,
         headers={"Authorization": "bearer token"}
     )
+    
+    response_activity = response.json()
 
-    print(response.json())
+    db_activity = session.query(Activity).all()[0]
+    assert response_activity["id"] == db_activity.id
 
-    print(session.query(Activity).all())
+    db_file = session.query(RPLFile).all()[0]
+    assert response_activity["starting_files_id"] == db_file.id

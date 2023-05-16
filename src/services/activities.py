@@ -22,7 +22,7 @@ class ActivitiesService(AppService):
             last_updated=datetime.now()
         )
 
-        file = RPLFilesService.create(file)
+        file = RPLFilesService(self.db).create(file)
 
         activity = ActivitiesRepository(self.db).create(activity.toActivity(course_id, file.id))
         return activity

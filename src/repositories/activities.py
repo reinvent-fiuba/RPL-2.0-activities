@@ -31,4 +31,3 @@ class ActivitiesRepository(AppRepository):
         self.db.delete(activity)
         self.db.commit()
         return activity
-        
