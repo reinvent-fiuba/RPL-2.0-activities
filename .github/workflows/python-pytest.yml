@@ -49,7 +49,7 @@ jobs:
       run: poetry lock --check
 
     - name: Install dependencies
-      run: poetry install --with github-actions
+      run: poetry install
     
     - name: Test with pytest
       run: |
