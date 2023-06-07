@@ -3,6 +3,7 @@ from unittest.mock import ANY, Mock, patch
 from src.models.activities import Activity
 from src.repositories.activities import ActivitiesRepository
 
+
 def test_create():
     activity = {"id": "1", "course_id": "22"}
 
@@ -24,6 +25,7 @@ def test_create():
 
     # Should return the activity
     assert res == activity
+
 
 def test_get_by_course_id():
     course_id = "22"
@@ -92,6 +94,7 @@ def test_get_by_id():
 
     # Should return the activity
     assert res == activity
+
 
 @patch.object(ActivitiesRepository, "get_by_id")
 def test_delete(get_by_id_mock):

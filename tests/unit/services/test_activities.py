@@ -1,9 +1,9 @@
 from unittest.mock import patch
 
 from fastapi import HTTPException
+
 from src.models.activities import Activity
 from src.models.rpl_files import RPLFile
-
 from src.repositories.activities import ActivitiesRepository
 from src.schemas.activities import ActivityCreate
 from src.services.activities import ActivitiesService
@@ -68,7 +68,9 @@ def test_get_by_id_not_found(get_by_id_mock):
 @patch.object(RPLFilesService, "create")
 @patch.object(CategoriesService, "get_by_id")
 @patch.object(ActivityCreate, "to_activity")
-def test_create_activity(create_activity_mock, create_file_mock, get_by_id_mock, to_activity_mock):
+def test_create_activity(
+    create_activity_mock, create_file_mock, get_by_id_mock, to_activity_mock
+):
     course_id = "22"
     activity_create = ActivityCreate(
         activityCategoryId="1",
@@ -76,14 +78,16 @@ def test_create_activity(create_activity_mock, create_file_mock, get_by_id_mock,
         description="Some Description",
         language="Python",
         points=22,
-        startingFile=[]
+        startingFile=[],
     )
 
     # Mock file creation
     file_id = "15"
+
     def create_file(file):
         file.id = file_id
-        return file   
+        return file
+
     RPLFilesService.create.side_effect = create_file
 
     # Mock activity creation
@@ -95,8 +99,9 @@ def test_create_activity(create_activity_mock, create_file_mock, get_by_id_mock,
             language=activity_create.language,
             points=activity_create.points,
             course_id=course_id,
-            starting_files_id=file_id
+            starting_files_id=file_id,
         )
+
     ActivityCreate.to_activity.side_effect = to_activity
     activity = to_activity(course_id, file_id)
     ActivitiesRepository.create.return_value = activity
@@ -120,7 +125,7 @@ def test_delete_activity(delete_mock):
     activity = {"id": id, "course_id": course_id}
     ActivitiesRepository.delete.return_value = activity
 
-    res = ActivitiesService({}).delete(course_id, id)
+    ActivitiesService({}).delete(course_id, id)
 
     # Should delete the activity
     ActivitiesRepository.delete.assert_called_once_with(course_id, id)

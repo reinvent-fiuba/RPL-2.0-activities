@@ -1,2 +1,2 @@
 def main():
-    print('RPL 2.0')
+    print("RPL 2.0")

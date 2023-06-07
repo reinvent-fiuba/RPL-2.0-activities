@@ -1,6 +1,6 @@
-from sqlmodel import Field, SQLModel
-
 from typing import Optional
+
+from sqlmodel import Field, SQLModel
 
 from src.schemas.activities import ActivityBase
 

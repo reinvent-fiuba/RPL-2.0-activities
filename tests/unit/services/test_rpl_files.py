@@ -1,9 +1,8 @@
-from unittest.mock import patch
-
-from unittest.mock import Mock
+from unittest.mock import Mock, patch
 
 from src.repositories.rpl_files import RPLFilesRepository
 from src.services.rpl_files import RPLFilesService
+
 
 @patch.object(RPLFilesRepository, "create")
 def test_create_rpl_file(create_mock):

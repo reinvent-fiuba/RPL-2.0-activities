@@ -8,8 +8,8 @@ from sqlmodel.pool import StaticPool
 from src.config.database import get_db
 from src.main import app
 from src.models.activities import Activity
-from src.models.rpl_files import RPLFile
 from src.models.categories import Category
+from src.models.rpl_files import RPLFile
 
 
 @pytest.fixture(name="session")
@@ -55,6 +55,7 @@ def activity_fixture(session: Session):
     session.add(activity)
     yield activity
 
+
 @pytest.fixture(name="category", autouse=False)
 def category_fixture(session: Session):
     category = Category(
@@ -68,6 +69,7 @@ def category_fixture(session: Session):
     )
     session.add(category)
     yield category
+
 
 def test_get_activities(client: TestClient, activity: Activity):
     response = client.get(
@@ -123,7 +125,7 @@ def test_delete_activity(client: TestClient, activity: Activity, session: Sessio
 
     assert response.status_code == 204
 
-    assert session.query(Activity).where(Activity.id == activity.id).first() == None
+    assert session.query(Activity).where(Activity.id == activity.id).first() is None
 
 
 def test_delete_activity_not_found(client: TestClient):
@@ -136,7 +138,10 @@ def test_delete_activity_not_found(client: TestClient):
 
 
 def test_create_activity(client: TestClient, category: Category, session: Session):
-    files = [('startingFile', open('./tests/http/resources/files_metadata', 'rb')), ('startingFile', open('./tests/http/resources/main.py', 'rb'))]
+    files = [
+        ("startingFile", open("./tests/http/resources/files_metadata", "rb")),
+        ("startingFile", open("./tests/http/resources/main.py", "rb")),
+    ]
     response = client.post(
         "/api/v2/courses/1/activities",
         data={
@@ -144,12 +149,12 @@ def test_create_activity(client: TestClient, category: Category, session: Sessio
             "points": 1,
             "language": "python",
             "activityCategoryId": category.id,
-            "description": "Some description"
+            "description": "Some description",
         },
         files=files,
-        headers={"Authorization": "bearer token"}
+        headers={"Authorization": "bearer token"},
     )
-    
+
     response_activity = response.json()
 
     db_activity = session.query(Activity).all()[0]
@@ -158,8 +163,12 @@ def test_create_activity(client: TestClient, category: Category, session: Sessio
     db_file = session.query(RPLFile).all()[0]
     assert response_activity["starting_files_id"] == db_file.id
 
+
 def test_create_activity_not_found_category(client: TestClient, session: Session):
-    files = [('startingFile', open('./tests/http/resources/files_metadata', 'rb')), ('startingFile', open('./tests/http/resources/main.py', 'rb'))]
+    files = [
+        ("startingFile", open("./tests/http/resources/files_metadata", "rb")),
+        ("startingFile", open("./tests/http/resources/main.py", "rb")),
+    ]
     response = client.post(
         "/api/v2/courses/1/activities",
         data={
@@ -167,10 +176,10 @@ def test_create_activity_not_found_category(client: TestClient, session: Session
             "points": 1,
             "language": "python",
             "activityCategoryId": 1,
-            "description": "Some description"
+            "description": "Some description",
         },
         files=files,
-        headers={"Authorization": "bearer token"}
+        headers={"Authorization": "bearer token"},
     )
-    
+
     assert response.status_code == 404

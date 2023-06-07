@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import List
 
 from fastapi import HTTPException
@@ -5,12 +6,11 @@ from fastapi import HTTPException
 from src.models.activities import Activity
 from src.models.rpl_files import RPLFile
 from src.repositories.activities import ActivitiesRepository
+from src.schemas.activities import ActivityCreate
+from src.services.categories import CategoriesService
 from src.services.main import AppService
 from src.services.rpl_files import RPLFilesService
-from src.services.categories import CategoriesService
-from src.schemas.activities import ActivityCreate
 
-from datetime import datetime
 
 class ActivitiesService(AppService):
     def create(self, course_id: int, activity: ActivityCreate) -> Activity:
@@ -22,14 +22,16 @@ class ActivitiesService(AppService):
             file_type="application/gzip",
             data=activity.starting_file,
             date_created=datetime.now(),
-            last_updated=datetime.now()
+            last_updated=datetime.now(),
         )
 
         file = RPLFilesService(self.db).create(file)
 
-        activity = ActivitiesRepository(self.db).create(activity.to_activity(course_id, file.id))
+        activity = ActivitiesRepository(self.db).create(
+            activity.to_activity(course_id, file.id)
+        )
         return activity
-    
+
     def get_by_course_id(self, course_id: int) -> List[Activity]:
         activities = ActivitiesRepository(self.db).get_by_course_id(course_id)
         return activities
@@ -50,4 +52,3 @@ class ActivitiesService(AppService):
                 status_code=404,
                 detail=f"The Activity with ID {id} does not exist in the Course {course_id}",
             )
-        
