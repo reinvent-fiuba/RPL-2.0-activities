@@ -9,6 +9,7 @@ from src.config.database import get_db
 from src.main import app
 from src.models.activities import Activity
 from src.models.rpl_files import RPLFile
+from src.models.categories import Category
 
 
 @pytest.fixture(name="session")
@@ -54,6 +55,19 @@ def activity_fixture(session: Session):
     session.add(activity)
     yield activity
 
+@pytest.fixture(name="category", autouse=False)
+def category_fixture(session: Session):
+    category = Category(
+        id=1,
+        course_id=1,
+        name="Test Category",
+        description="Some description",
+        active=True,
+        date_created=datetime.now(),
+        last_updated=datetime.now(),
+    )
+    session.add(category)
+    yield category
 
 def test_get_activities(client: TestClient, activity: Activity):
     response = client.get(
@@ -121,7 +135,30 @@ def test_delete_activity_not_found(client: TestClient):
     assert response.status_code == 404
 
 
-def test_create_activity(client: TestClient, session: Session):
+def test_create_activity(client: TestClient, category: Category, session: Session):
+    files = [('startingFile', open('./tests/http/resources/files_metadata', 'rb')), ('startingFile', open('./tests/http/resources/main.py', 'rb'))]
+    response = client.post(
+        "/api/v2/courses/1/activities",
+        data={
+            "name": "Some test activity",
+            "points": 1,
+            "language": "python",
+            "activityCategoryId": category.id,
+            "description": "Some description"
+        },
+        files=files,
+        headers={"Authorization": "bearer token"}
+    )
+    
+    response_activity = response.json()
+
+    db_activity = session.query(Activity).all()[0]
+    assert response_activity["id"] == db_activity.id
+
+    db_file = session.query(RPLFile).all()[0]
+    assert response_activity["starting_files_id"] == db_file.id
+
+def test_create_activity_not_found_category(client: TestClient, session: Session):
     files = [('startingFile', open('./tests/http/resources/files_metadata', 'rb')), ('startingFile', open('./tests/http/resources/main.py', 'rb'))]
     response = client.post(
         "/api/v2/courses/1/activities",
@@ -136,10 +173,4 @@ def test_create_activity(client: TestClient, session: Session):
         headers={"Authorization": "bearer token"}
     )
     
-    response_activity = response.json()
-
-    db_activity = session.query(Activity).all()[0]
-    assert response_activity["id"] == db_activity.id
-
-    db_file = session.query(RPLFile).all()[0]
-    assert response_activity["starting_files_id"] == db_file.id
+    assert response.status_code == 404

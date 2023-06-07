@@ -15,13 +15,18 @@ class ActivitiesRepository(AppRepository):
         return activity
 
     def get_by_course_id(self, course_id: int) -> List[Activity]:
-        statement = select(Activity).where(Activity.course_id == course_id)
-        activities = self.db.exec(statement).all()
+        activities = (
+            self.db.query(Activity).where(Activity.course_id == course_id).all()
+        )
         return activities
 
     def get_by_id(self, course_id: int, id: int) -> Activity:
-        statement = select(Activity).where(Activity.course_id == course_id).where(Activity.id == id)
-        activity = self.db.exec(statement).first()
+        activity = (
+            self.db.query(Activity)
+            .where(Activity.course_id == course_id)
+            .where(Activity.id == id)
+            .first()
+        )
         return activity
 
     def delete(self, course_id: int, id: int) -> Optional[Activity]:

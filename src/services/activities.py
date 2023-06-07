@@ -7,13 +7,16 @@ from src.models.rpl_files import RPLFile
 from src.repositories.activities import ActivitiesRepository
 from src.services.main import AppService
 from src.services.rpl_files import RPLFilesService
-
+from src.services.categories import CategoriesService
 from src.schemas.activities import ActivityCreate
 
 from datetime import datetime
 
 class ActivitiesService(AppService):
     def create(self, course_id: int, activity: ActivityCreate) -> Activity:
+        # Just try to get the category, to validate its existence within the course
+        CategoriesService(self.db).get_by_id(course_id, activity.activity_category_id)
+
         file = RPLFile(
             file_name=f"{datetime.now()}_{course_id}_{activity.name}.tar.gz",
             file_type="application/gzip",
@@ -24,7 +27,7 @@ class ActivitiesService(AppService):
 
         file = RPLFilesService(self.db).create(file)
 
-        activity = ActivitiesRepository(self.db).create(activity.toActivity(course_id, file.id))
+        activity = ActivitiesRepository(self.db).create(activity.to_activity(course_id, file.id))
         return activity
     
     def get_by_course_id(self, course_id: int) -> List[Activity]:
