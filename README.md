@@ -11,6 +11,11 @@ curl -sSL https://install.python-poetry.org | python3 -
 poetry install
 ```
 
+- Install pre commit hooks locally (more [info](https://pre-commit.com/))
+```
+poetry run pre-commit install
+```
+
 ## Running the project
 
 ```
