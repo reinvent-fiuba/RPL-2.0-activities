@@ -1,7 +1,30 @@
-from unittest.mock import ANY, Mock
+from unittest.mock import ANY, Mock, patch
 
 from src.models.activities import Activity
 from src.repositories.activities import ActivitiesRepository
+
+
+def test_create():
+    activity = {"id": "1", "course_id": "22"}
+
+    db = Mock()
+    db.add.return_value = db
+    db.commit.return_value = db
+    db.refresh.return_value = activity
+
+    res = ActivitiesRepository(db).create(activity)
+
+    # Should create the activity
+    db.add.assert_called_once_with(activity)
+
+    # Should commit the transaction
+    db.commit.assert_called_once_with()
+
+    # Should refresh the Activity object
+    db.refresh.assert_called_once_with(activity)
+
+    # Should return the activity
+    assert res == activity
 
 
 def test_get_by_course_id():
@@ -68,6 +91,33 @@ def test_get_by_id():
 
     # Should return the first activity
     db.first.assert_called_once_with()
+
+    # Should return the activity
+    assert res == activity
+
+
+@patch.object(ActivitiesRepository, "get_by_id")
+def test_delete(get_by_id_mock):
+    id = "1"
+    course_id = "22"
+    activity = {"id": id, "course_id": course_id}
+
+    ActivitiesRepository.get_by_id.return_value = activity
+
+    db = Mock()
+    db.delete.return_value = db
+    db.commit.return_value = None
+
+    res = ActivitiesRepository(db).delete(course_id, id)
+
+    # Should retrieve the activity by id
+    ActivitiesRepository.get_by_id.assert_called_once_with(course_id, id)
+
+    # Should delete the activity
+    db.delete.assert_called_once_with(activity)
+
+    # Should commit the transaction
+    db.commit.assert_called_once_with()
 
     # Should return the activity
     assert res == activity
